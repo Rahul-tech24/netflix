@@ -88,11 +88,32 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-    res.clearCookie('token');   
+    res.clearCookie('jwt-netflix', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax'
+    });   
     res.status(200).json({ message: 'User logged out successfully.' });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error.' });
   }
 };
 
-export { signup, login, logout };
+const authCheck = async (req, res) => {
+  try {
+    res.status(200).json({ 
+      success: true, 
+      user: {
+        id: req.user._id,
+        username: req.user.username,
+        email: req.user.email,
+        image: req.user.image
+      }
+    });
+  } catch (error) {
+    console.log("Error in authCheck controller: ", error.message);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+};
+
+export { signup, login, logout, authCheck };

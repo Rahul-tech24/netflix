@@ -4,14 +4,14 @@ import { JWT_SECRET, NODE_ENV } from '../config/envVars.js';
 
 
 const generateTokenAndCookie = (userId, res) => {
-    const token = jwt.sign({ id: userId },
+    const token = jwt.sign({ userId: userId },
     JWT_SECRET, { expiresIn: '1d' });
-    res.cookie('token', token,
+    res.cookie('jwt-netflix', token,
        
         { maxAge: 24 * 60 * 60 * 1000,
             httpOnly: true,
-            secure: NODE_ENV !== 'development',
-            sameSite: 'None'
+            secure: NODE_ENV === 'production',
+            sameSite: NODE_ENV === 'production' ? 'None' : 'Lax'
         });
   return token;
 }
